@@ -40,7 +40,6 @@ export const updateAdd=async(req,res)=>{
        user.images.push(...imagesPath);
        await user.save();
        return res.json({message:'Images Added Successfully!!',status:true})
-
     } catch (error) {
         return res.json({message:error.message,status:false}) 
     }
@@ -68,6 +67,43 @@ export const updateDelete=async(req,res)=>{
         status:true,
         user:user
       })
+    } catch (error) {
+        return res.json({message:error.message,status:false})
+    }
+}
+
+export const updateReplace=async(req,res)=>{
+    try {
+       const userId=req.params.userId;
+       const user=await UserModel.findById(userId);
+       if(!user){
+        return res.json({message:'User not found!!',status:false})
+       }
+       if(!req.files||req.files.length===0){
+        return res.json({message:'No Image provided!!',status:false})
+       }
+       const imagesPath=req.files.map(image=>image.path);
+      
+    user.images.map((image)=>(fs.unlinkSync(image)));
+    user.images=imagesPath;
+    await user.save();
+    return res.json({message:"All Images Replaced with new Ones!!",status:true})
+    
+    } catch (error) {
+        return res.json({message:error.message,status:false})
+    }
+}
+
+export const deleteAll=async(req,res)=>{
+    try {
+       const userId=req.params.userId;
+       const user=await UserModel.findById(userId);
+       if(!user){
+        return res.json({message:"User not found!!",status:false})
+       } 
+       user.images.forEach((image)=>(fs.unlinkSync(image)));
+       await UserModel.findByIdAndDelete(userId);
+       return res.json({message:'Deleted Successfully',status:true})
     } catch (error) {
         return res.json({message:error.message,status:false})
     }

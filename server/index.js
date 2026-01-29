@@ -7,7 +7,10 @@ import userRoutes from './Routes/userRoutes.js';
 const PORT=process.env.PORT;
 const app=express();
 
-app.use(cors());
+app.use(cors({
+    origin:'http://localhost:5173'
+}));
+app.use('/uploads',express.static('uploads'))
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
